@@ -5,7 +5,7 @@ _Sleek, Simple Game Launcher_
 Lustrous Launcher is a sleek, simple game launcher designed to make launching games a more pleasant experience.
 Lustrous Launcher launches quickly and doesn't hang around in the background hogging resources!
 
-###Dependencies
+### Dependencies
 all dependencies *MUST* be installed before the Lustrous Launcher python script can be used
 - [Pillow (PIL)](https://pillow.readthedocs.io/en/latest/installation.html)
 

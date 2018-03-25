@@ -1,3 +1,5 @@
+![](logo.svg)
+
 ## Downloads:
 
 - [Source (python)](https://github.com/Spatchy/Lustrous-Launcher/archive/master.zip)

@@ -7,6 +7,8 @@ import subprocess
 import time
 import os
 import ast
+import glob
+from PIL import Image, ImageTk
 import fontinstall
 
 if not os.path.exists("./games"): #first launch
@@ -88,13 +90,14 @@ class Gamelink(Frame):
     def __init__(self, parent, bannerimg, link):
         super(Gamelink, self).__init__(parent)
         self.pack_propagate(1)
-        self.imggif = PhotoImage(file = bannerimg)
+        self.pilimage = Image.open(bannerimg)
+        self.imggif = ImageTk.PhotoImage(self.pilimage)
         self.banner = Label(self, width = 460, height = 215, image = self.imggif, bg = "#000001")
         self.banner.image = self.imggif
         self.banner.pack()
         def opengame(event):
             def openit():
-                subprocess.run(link)
+                subprocess.run(link, shell=True)
             self.t = threading.Thread(target = openit)
             self.t.start()
             time.sleep(2)
@@ -123,7 +126,7 @@ class Gamegrid(Frame):
         Row = 0
         for file in os.listdir("./games"): #recur through json files
             content = ast.literal_eval(open("./games/"+str(file)).read()) #read content of json to dict
-            imgpath = "./banners/"+str(content["bannername"]+".gif") #get banner path
+            imgpath = glob.glob(os.path.join("./banners", str(content["bannername"]) + '.*'))[0] #get banner path
             linkpath = content["path"] #get exe path
             if Column > Columns:
                 Column = 0
@@ -202,7 +205,7 @@ def addgame():
         currentdir = os.path.dirname(os.path.abspath(__file__))
         os.startfile(currentdir +"\\banners\\")
     bannerbtn = Button(bannerframe, text = "Open Banner Folder", command = openbannerfolder)
-    bannerwarn = Label(bannerframe, text = "Banners must be in banner folder in .gif format")
+    bannerwarn = Label(bannerframe, text = "Banners must be in the 'banners' folder - DO NOT include path or file extension")
     bannerlbl.grid(row = 0, column = 0, sticky = W)
     bannerenter.grid(row = 0, column = 1, sticky = E+W)
     bannerbtn.grid(row = 0, column = 2, sticky = E)

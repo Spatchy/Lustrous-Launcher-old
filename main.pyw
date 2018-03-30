@@ -6,14 +6,20 @@ import threading
 import subprocess
 import time
 import os
-import ast
+import webbrowser
 import glob
 from PIL import Image, ImageTk
+import urllib.request
+import json
 import fontinstall
+from sys import exit
 
 if not os.path.exists("./games"): #first launch
     try:
-        currentdir = os.path.dirname(os.path.abspath(__file__))
+        if getattr(sys, 'frozen', False): #check if the version is exe or not
+            currentdir = os.path.dirname(sys.executable)
+        else:
+            currentdir = os.path.dirname(__file__)
         fontinstall.install_font(currentdir + "\\assets\\Font Awesome 5 Free-Solid-900.otf")
         root = Tk()
         root.withdraw()
@@ -29,7 +35,9 @@ if not os.path.exists("./games"): #first launch
 
 
 global exitcode
+global VERSION
 exitcode = 0
+VERSION = "1.2"
 
 root = Tk()
 root.geometry(str(root.winfo_screenwidth()) + "x" + str(int(root.winfo_screenheight())-40))
@@ -125,7 +133,7 @@ class Gamegrid(Frame):
         Column = 0
         Row = 0
         for file in os.listdir("./games"): #recur through json files
-            content = ast.literal_eval(open("./games/"+str(file)).read()) #read content of json to dict
+            content = json.loads(open("./games/"+str(file)).read()) #read content of json to dict
             imgpath = glob.glob(os.path.join("./banners", str(content["bannername"]) + '.*'))[0] #get banner path
             linkpath = content["path"] #get exe path
             if Column > Columns:
@@ -170,16 +178,26 @@ def settings():
             break
         except FileNotFoundError:
             settingsfile = open("settings.ini","w")
-            settingsfile.write("test=1")
+            if getattr(sys, 'frozen', False): #check if version is exe or pyw
+                settingsfile.write("flavour=exe")
+            else:
+                settingsfile.write("flavour=pyw")
             settingsfile.close()
 
     settingsdict = {}#read settings.ini to dict for easier editing
     for line in settingsfile:
         settingsdict[line.split("=")[0]] = line.split("=")[1].strip("\n")
     def update():
-        messagebox.showinfo("Update", "Auto updating is not yet available :(\nCheck https://github.com/Spatchy/Lustrous-Launcher for latest version")
+        latestrelease = json.loads(urllib.request.urlopen("https://api.github.com/repos/Spatchy/Lustrous-Launcher/releases/latest").read().decode('utf-8'))["tag_name"]
+        if int(latestrelease.replace(".","")) > int(VERSION.replace(".","")):
+            if messagebox.askyesno("Update Available!", "This version is: {0}\nThe latest release is: {1}\n\nDo you want to go to Github and download it now?".format(VERSION, latestrelease)):
+                webbrowser.open("https://github.com/Spatchy/Lustrous-Launcher/releases/tag/" + latestrelease)
+        else:
+            messagebox.showinfo("Up To Date!", "Lustrous Launcher is up to date!")
     checkupdatebtn = Button(root, text = "Check for updates", command = update)
     checkupdatebtn.pack(side = BOTTOM)
+    tempsettingslbl = Label(root, text = "There are no settings yet. Try checking for updates below!", bg = "#FFFFFF")
+    tempsettingslbl.pack()
         
     root.mainloop()
 
@@ -202,8 +220,13 @@ def addgame():
     bannerlbl = Label(bannerframe, text = "Banner Name: ", width = 15)
     bannerenter = Entry(bannerframe)
     def openbannerfolder():
-        currentdir = os.path.dirname(os.path.abspath(__file__))
-        os.startfile(currentdir +"\\banners\\")
+        if getattr(sys, 'frozen', False):
+            currentdir = os.path.dirname(sys.executable)
+            print(currentdir)
+        else:
+            currentdir = os.path.dirname(__file__)
+        bannersdir = currentdir + "\\banners"
+        subprocess.Popen(["explorer.exe", bannersdir])
     bannerbtn = Button(bannerframe, text = "Open Banner Folder", command = openbannerfolder)
     bannerwarn = Label(bannerframe, text = "Banners must be in the 'banners' folder - DO NOT include path or file extension")
     bannerlbl.grid(row = 0, column = 0, sticky = W)
@@ -236,7 +259,7 @@ def addgame():
         jsondict["path"] = pathbox.get()
         jsondict["bannername"] = bannerenter.get()
         jsonfile = open("./games/" + titleenter.get() + ".json","w")
-        jsonfile.write(str(jsondict))
+        jsonfile.write(str(jsondict).replace("'",'"'))
         if messagebox.askyesno("Done!", "Would you like to add another game?"):
             titleenter.delete(0, END)
             pathbox.delete(0, END)

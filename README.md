@@ -5,7 +5,8 @@ _Sleek, Simple Game Launcher_
 Lustrous Launcher is a sleek, simple game launcher designed to make launching games a more pleasant experience.
 Lustrous Launcher launches quickly and doesn't hang around in the background hogging resources!
 
-#####EXE version is now available! [Get it here!](https://github.com/Spatchy/Lustrous-Launcher/releases/tag/1.2)
+#####EXE version is now available! 
+[Get it here!](https://github.com/Spatchy/Lustrous-Launcher/releases/tag/1.2)
 
 ###Dependencies
 all dependencies *MUST* be installed before the Lustrous Launcher python script can be used

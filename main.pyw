@@ -37,7 +37,7 @@ if not os.path.exists("./games"): #first launch
 global exitcode
 global VERSION
 exitcode = 0
-VERSION = "1.2"
+VERSION = "1.3"
 
 root = Tk()
 root.geometry(str(root.winfo_screenwidth()) + "x" + str(int(root.winfo_screenheight())-40))
@@ -147,7 +147,7 @@ class Gamegrid(Frame):
             if Row < 4:
                 self.gridframe.config(height = (255*4)+80) #this prevents a weird 'negative scroll'
             else:
-                self.gridframe.config(height = (255*(Row))+80)#create enough height for everything (+80 for top padding)
+                self.gridframe.config(height = (255*(Row+1))+80)#create enough height for everything (+80 for top padding) +1 BEACUSE ROWS START AT 0!!!
         self.area.pack()
         self.area.config(scrollregion = (self.area.bbox("all")))
         self.scrollbar.config(command = self.area.yview)

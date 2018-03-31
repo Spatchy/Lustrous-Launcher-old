@@ -23,7 +23,9 @@ To complete the setup, Lustrous Launcher needs to be run with admin privileges (
 Alternatively, you can install the `Font Awesome 5 Free-Solid-900.otf` file manually (it is located in the assets folder) and create two directories `games` and `banners` in the root of the Lustrous Launcher folder
 
 ### Changelog
-######1.2
+###### 1.3
+- Fixed a pretty big bug that cut off the last line of games
+###### 1.2
 - EXE version is now available! [Get it here!](https://github.com/Spatchy/Lustrous-Launcher/releases/tag/1.2)
 - `Check for updates` button in settings now does its job and tells you if there's a new version available
 - Some code changed behind the scenes for compatibility with EXE version

@@ -33,7 +33,7 @@ Alternatively, you can install the `Font Awesome 5 Free-Solid-900.otf` file manu
 - Added default.png to assets folder to be used when banner is not found
 - Game title is displayed on cards that use the default banner
 - Added link to online tutorial in settings
-- Made scrolling twice a smooth
+- Made scrolling twice as smooth
 - Fixed a bug that started cutting the bottom few pixels off cards if enough games were added
 ###### 1.3
 - Fixed a pretty big bug that cut off the last line of games

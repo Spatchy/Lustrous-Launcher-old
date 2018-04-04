@@ -37,7 +37,7 @@ if not os.path.exists("./games"): #first launch
 global exitcode
 global VERSION
 exitcode = 0
-VERSION = "1.3"
+VERSION = "1.4"
 
 root = Tk()
 root.geometry(str(root.winfo_screenwidth()) + "x" + str(int(root.winfo_screenheight())-40))
@@ -95,13 +95,16 @@ settingsbtn.bind("<Leave>", lambda x: btnhover(settingsbtn, False))
 settingsbtn.bind("<Button-1>", lambda x: close(1))
 
 class Gamelink(Frame):
-    def __init__(self, parent, bannerimg, link):
+    def __init__(self, parent, bannerimg, link, title):
         super(Gamelink, self).__init__(parent)
         self.pack_propagate(1)
         self.pilimage = Image.open(bannerimg)
         self.imggif = ImageTk.PhotoImage(self.pilimage)
         self.banner = Label(self, width = 460, height = 215, image = self.imggif, bg = "#000001")
         self.banner.image = self.imggif
+        if bannerimg == glob.glob(os.path.join("./assets", "default.png"))[0]:
+            self.titlelbl = Label(self, text = title, bg = "#D83434", fg = "#FFFFFF")
+            self.titlelbl.place(relx = 0.0, rely = 0.0)
         self.banner.pack()
         def opengame(event):
             def openit():
@@ -123,6 +126,7 @@ class Gamelink(Frame):
 class Gamegrid(Frame):
     def __init__(self, parent, columns, h, w):
         super(Gamegrid, self).__init__(parent)
+        self.config(bg = "#000001")
         self.scrollbar = Scrollbar(self)
         self.scrollbar.pack(side = RIGHT, fill = Y)
         self.area = Canvas(self, yscrollcommand=self.scrollbar.set, width = w, height = h, bg = "#000001", bd = 0, highlightthickness = 0)
@@ -134,20 +138,27 @@ class Gamegrid(Frame):
         Row = 0
         for file in os.listdir("./games"): #recur through json files
             content = json.loads(open("./games/"+str(file)).read()) #read content of json to dict
-            imgpath = glob.glob(os.path.join("./banners", str(content["bannername"]) + '.*'))[0] #get banner path
+            gametitle = content["title"] #get game title
+            try:
+                imgpath = glob.glob(os.path.join("./banners", str(content["bannername"]) + '.*'))[0] #get banner path
+            except IndexError: #God knows why an IndexError is raised if the banner doesn't exist!
+                imgpath = glob.glob(os.path.join("./assets", "default.png"))[0]
             linkpath = content["path"] #get exe path
             if Column > Columns:
                 Column = 0
                 Row += 1
             if Row == 0: #additional top padding
-                Gamelink(self.gridframe, imgpath, linkpath).grid(column = Column, row = Row, padx = (80, 0), pady = (80, 40))
+                Gamelink(self.gridframe, imgpath, linkpath, gametitle).grid(column = Column, row = Row, padx = (80, 0), pady = (80, 40))
             else:
-                Gamelink(self.gridframe, imgpath, linkpath).grid(column = Column, row = Row, padx = (80, 0), pady = (0, 40))
+                Gamelink(self.gridframe, imgpath, linkpath, gametitle).grid(column = Column, row = Row, padx = (80, 0), pady = (0, 40))
             Column += 1
             if Row < 4:
-                self.gridframe.config(height = (255*4)+80) #this prevents a weird 'negative scroll'
+                self.gridframe.config(height = (259*4)+80) #this prevents a weird 'negative scroll'
             else:
-                self.gridframe.config(height = (255*(Row+1))+80)#create enough height for everything (+80 for top padding) +1 BEACUSE ROWS START AT 0!!!
+                self.gridframe.config(height = (259*(Row+1))+80)#create enough height for everything (259=card height+padding+bd)(+80 for top padding) +1 BEACUSE ROWS START AT 0!!!
+        if Column == 0 and Row == 0: #means there are no games added
+            nogameslbl = Label(self, text = "You have no games - Click  to add some\nClick anywhere or press ESC to close", bg = "#000001", fg = "#FFFFFF", font=("Font Awesome 5 Free Solid",16))
+            nogameslbl.place(relx = 0.5, rely = 0.5, anchor = CENTER)
         self.area.pack()
         self.area.config(scrollregion = (self.area.bbox("all")))
         self.scrollbar.config(command = self.area.yview)
@@ -196,9 +207,47 @@ def settings():
             messagebox.showinfo("Up To Date!", "Lustrous Launcher is up to date!")
     checkupdatebtn = Button(root, text = "Check for updates", command = update)
     checkupdatebtn.pack(side = BOTTOM)
-    tempsettingslbl = Label(root, text = "There are no settings yet. Try checking for updates below!", bg = "#FFFFFF")
-    tempsettingslbl.pack()
-        
+
+    fixbannersframe = Frame(root, bg = "#FFFFFF")
+    fixbannerslbl = Label(fixbannersframe, text = "Lustrous Launcher treats the hex color #000001 as transparent\nIf a banner contains this color, it can appear broken", bg = "#FFFFFF")
+    fixbannerslbl.grid(row = 0, column = 0)
+    
+    def bannerfix(): #replaces #000001 with #000000
+        numfixed = 0
+        numchecked = 0
+        for banner in os.listdir("./banners"):
+            numchecked += 1
+            detected = False
+            img = Image.open("./banners/" + banner)
+            pixdata = img.load()
+            progtext.set("Banners checked: {0}/{1}".format(numchecked, str(len(os.listdir("./banners")))))
+            fixbannersprogresslbl.update_idletasks()
+            for y in range(img.size[1]):
+                for x in range(img.size[0]):
+                    if pixdata[x, y] == (0, 0, 1):
+                        pixdata[x, y] = (0, 0, 0)
+                        detected = True #detects if the banner needed fixing
+            if detected:
+                numfixed += 1
+            img.save("./banners/" + banner)
+        if messagebox.showinfo("Complete", "{0} banners were detected as broken and were fixed".format(numfixed)):
+            progtext.set("") 
+    fixbannersbtn = Button(fixbannersframe, text = "Fix broken banners", command = bannerfix)
+    progtext = StringVar()
+    fixbannersprogresslbl = Label(fixbannersframe, textvariable = progtext, bg = "#FFFFFF")
+    fixbannersprogresslbl.grid(row = 1, column = 0, columnspan = 2)
+    fixbannersbtn.grid(row = 0, column = 1)
+    fixbannersframe.pack()
+
+    def opentutorial():
+        webbrowser.open("https://spatchy.github.io/Lustrous-Launcher/tutorial")
+    helpframe = Frame(root, bg = "#FFFFFF")
+    helplbl = Label(helpframe, text = "Help documentation is now available online", bg = "#FFFFFF")
+    tutorialbtn = Button(helpframe, text = "View online help", command = opentutorial)
+    helplbl.grid(row = 0, column = 0)
+    tutorialbtn.grid(row = 0, column = 1)
+    helpframe.pack()
+    
     root.mainloop()
 
 def addgame():

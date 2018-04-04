@@ -1,14 +1,17 @@
 # Lustrous Launcher
-_Sleek, Simple Game Launcher_
+_The Sleek, Simple Game Launcher_
 
 ### What is Lustrous Launcher?
-Lustrous Launcher is a sleek, simple game launcher designed to make launching games a more pleasant experience.
-Lustrous Launcher launches quickly and doesn't hang around in the background hogging resources!
+Lustrous Launcher is the sleek, simple game launcher, designed to make launching games a more pleasant experience.
+Lustrous Launcher opens quickly and doesn't hang around in the background hogging resources!
 
-### EXE version is now available! 
-[Get it here!](https://github.com/Spatchy/Lustrous-Launcher/releases/latest)
+### Tutorial
+Online help and a tutorial can now be found [here](https://spatchy.github.io/Lustrous-Launcher/tutorial)
 
-### Dependencies
+### EXE version
+The EXE version can be downloaded from the [releases page](https://github.com/Spatchy/Lustrous-Launcher/releases/latest)
+
+### Dependencies (Python Script Only)
 all dependencies *MUST* be installed before the Lustrous Launcher python script can be used
 - [Pillow (PIL)](https://pillow.readthedocs.io/en/latest/installation.html)
 
@@ -23,6 +26,14 @@ To complete the setup, Lustrous Launcher needs to be run with admin privileges (
 Alternatively, you can install the `Font Awesome 5 Free-Solid-900.otf` file manually (it is located in the assets folder) and create two directories `games` and `banners` in the root of the Lustrous Launcher folder
 
 ### Changelog
+###### 1.4
+- `Fix banners` tool added to settings menu to fix transparency issues with some banner images
+- Lustrous Launcher no longer crashes when a banner doesn't exist
+- Added default.png to assets folder to be used when banner is not found
+- Game title is displayed on cards that use the default banner
+- Added link to online tutorial in settings
+- Made scrolling twice a smooth
+- Fixed a bug that started cutting the bottom few pixels off cards if enough games were added
 ###### 1.3
 - Fixed a pretty big bug that cut off the last line of games
 ###### 1.2
@@ -38,8 +49,7 @@ Alternatively, you can install the `Font Awesome 5 Free-Solid-900.otf` file manu
 
 ### Coming Soon
 - A Completed settings menu
-- A Cleaned up `add game` GUI
 - Steam library integration
+- Big customization features!
 - Quicker launching when there are lots of games
-- Tutorial?
 - Probably lots more

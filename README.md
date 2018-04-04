@@ -4,6 +4,7 @@ _The Sleek, Simple Game Launcher_
 ### What is Lustrous Launcher?
 Lustrous Launcher is the sleek, simple game launcher, designed to make launching games a more pleasant experience.
 Lustrous Launcher opens quickly and doesn't hang around in the background hogging resources!
+Download the latest release [here](https://spatchy.github.io/Lustrous-Launcher/tutorial)
 
 ### Tutorial
 Online help and a tutorial can now be found [here](https://spatchy.github.io/Lustrous-Launcher/tutorial)

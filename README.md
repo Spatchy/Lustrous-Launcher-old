@@ -35,7 +35,6 @@ Alternatively, you can install the `Font Awesome 5 Free-Solid-900.otf` file manu
 - First Release
 
 ### Coming Soon
-- EXE version
 - A Completed settings menu
 - A Cleaned up `add game` GUI
 - Steam library integration

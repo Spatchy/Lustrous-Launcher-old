@@ -20,4 +20,11 @@ _here's how to get started using Lustrous Launcher for the first time_
 9. You should recieve a confirmation message `Inintial setup is complete. Please run Lustrous Launcher again`
 10. Lustrous Launcher can now be run normally 
 
-### More coming soon!
+# Adding Games
+1. To add a game to Lustrous Launcher, press the `+` button on the bottom left in the sidebar
+2. The main screen should close and you should be presented with the `Add Games` window
+3. Type the name of the game you want to add in the `Title` field (note: Games are sorted by title in alphabetical order, this title will also be used when searching with the search bar in the upcoming version 1.5)
+4. In the `Banner` field, you should type the name of the corresponding banner in the `banners` folder (Note: Official banner images can be downloaded from Steam - many more options are available from [Cryotank](http://steam.cryotank.net/), [SteamgridDB](http://www.steamgriddb.com/) and [the Steam Grid subreddit](https://www.reddit.com/r/steamgrid/))
+5. To make it easier to drag and drop banner images, you can click the `Open Banner Folder` button to open an explorer window to the `banners` folder.
+6. Click the `Choose Game Path` button and select the game EXE from its install location (Note: Some games have multiple EXEs and you need to make sure you select the right one for it to work)
+7. Click `Save Game` to add the game to Lustrous Launcher

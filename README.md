@@ -11,13 +11,6 @@ Version 1.5 has just dropped with a search bar, redesigned settings menu and FRE
 ### Tutorial
 Online help and a tutorial can now be found [here](https://spatchy.github.io/Lustrous-Launcher/tutorial)
 
-### EXE version
-The EXE version can be downloaded from the [releases page](https://github.com/Spatchy/Lustrous-Launcher/releases/latest)
-
-### Dependencies (Python Script Only)
-all dependencies *MUST* be installed before the Lustrous Launcher python script can be used
-- [Pillow (PIL)](https://pillow.readthedocs.io/en/latest/installation.html)
-
 ### Changelog
 ###### 1.5
 - Fixed bug that caused the back pannel to appear behind other windows or dissappear altogether
@@ -48,6 +41,12 @@ all dependencies *MUST* be installed before the Lustrous Launcher python script 
 - Added support for all common image types for use as banners
 ###### 1.0
 - First Release
+### EXE version
+The EXE version can be downloaded from the [releases page](https://github.com/Spatchy/Lustrous-Launcher/releases/latest)
+
+### Dependencies (Python Script Only)
+all dependencies *MUST* be installed before the Lustrous Launcher python script can be used
+- [Pillow (PIL)](https://pillow.readthedocs.io/en/latest/installation.html)
 
 ### First Launch (Python Script and <v1.5 Only)
 ###### From v1.5 onwards, this no longer applies to the EXE version

@@ -34,7 +34,7 @@ Alternatively, you can install the `Font Awesome 5 Free-Solid-900.otf` file manu
 - Fixed bug that caused the back pannel to appear behind other windows or dissappear altogether
 - Added search bar! Press enter to search through your huge game library!
 - Added Steam button to launch Steam directly from Lustrous Launcher
-- Added Steam library integration /[Beta/]! This new tool in the `Add Games` menu allows you to import your whole library!
+- Added Steam library integration [Beta]! This new tool in the `Add Games` menu allows you to import your whole library!
 - Added auto-updater. No more visiting GitHub, just press the button and the latest version will be installed automatically!
 - Redesigned settings menu that's far more user friendly
 - Added a bunch of new settings for Steam and the search bar

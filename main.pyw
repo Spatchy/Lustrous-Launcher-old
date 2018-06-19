@@ -51,12 +51,10 @@ if not os.path.exists("./games"): #first launch
             return False
 
     if is_admin():
-        print("admin rights obtained")
         run_setup()
     else:
         # Re-run the program with admin rights
         if getattr(sys, 'frozen', False):
-            print("attempting to obtain admin rights")
             ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, sys.argv[0], None, 1)
         else:    
             top = Tk()
@@ -225,7 +223,6 @@ else:
             self.banner.bind("<Button-3>", self.editmenu)
         def editmenu(self, event):
             def edit(event):
-                print("moo!")
                 close(self)
             def cancel(event):
                 self.editlbl.destroy()
@@ -600,7 +597,8 @@ else:
                     else:
                         currentdir = os.path.dirname(__file__)
                         updateapp = currentdir + "\\llupdate.pyw"
-                    subprocess.run(updateapp, shell = True)
+                    subprocess.Popen(updateapp, shell = True)
+                    root.destroy()
             else:
                 messagebox.showinfo("Up To Date!", "Lustrous Launcher is up to date!")
         checkupdatebtn = Button(baseframe, text = "Check for updates", command = update)
@@ -678,7 +676,6 @@ else:
                     if file.startswith("appmanifest_"):
                         try:
                             manifest = open(libpath+file, "r")
-                            print(manifest)
                             manifestdict = {}
                             for line in manifest.readlines():#possibly the dirtiest parse of a file ever! <- not stupid if it works!
                                 try:
@@ -694,7 +691,6 @@ else:
                                     exefound = True
                                     path = libpath+"common/"+manifestdict["installdir"]+"/"+file
                             if not exefound:
-                                print("NO EXE FOUND")
                                 try:
                                     for file in os.listdir(libpath+"common/"+manifestdict["installdir"]+"/bin"):
                                         if file.lower().endswith(".exe"):
@@ -708,7 +704,6 @@ else:
                                 path = None
                             attributesdict={"name":manifestdict["name"], "path":path, "ID":manifestdict["appid"], "exefound":exefound, "multipleexes":multipleexes}
                             gameslist.append(attributesdict)
-                            print(manifestdict)
                         except FileNotFoundError:
                             pass #just in case file isn't acf
                     
@@ -765,7 +760,6 @@ else:
             secondframe = Frame(top)
 
         steamimportbtn = Button(root, text = "Import Steam library", command = importsteam)
-        print(kwargs)
         
 
         titleframe = Frame(root, bg = "#FFFFFF")
@@ -850,7 +844,6 @@ else:
     elif exitcode == 3:
         opensteam()
     elif type(exitcode) is Gamelink:
-        print("Beep boop")
         addgame(target = exitcode)
 
 

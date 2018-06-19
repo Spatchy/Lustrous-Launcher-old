@@ -18,17 +18,6 @@ The EXE version can be downloaded from the [releases page](https://github.com/Sp
 all dependencies *MUST* be installed before the Lustrous Launcher python script can be used
 - [Pillow (PIL)](https://pillow.readthedocs.io/en/latest/installation.html)
 
-### First Launch (Python Script and <v1.5 Only)
-###### From v1.5 onwards, this no longer applies to the EXE version
-When you run Lustrous Launcher for the first time, it is very likely you will see an error:
-```
-Could not install required font.
-Try running Lustrous Launcher with admin privileges
-```
-This is due to the `Font Awesome 5 Free-Solid-900.otf` font file not being able to be installed.
-To complete the setup, Lustrous Launcher needs to be run with admin privileges (run the python script from an elevated command window)
-Alternatively, you can install the `Font Awesome 5 Free-Solid-900.otf` file manually (it is located in the assets folder) and create two directories `games` and `banners` in the root of the Lustrous Launcher folder
-
 ### Changelog
 ###### 1.5
 - Fixed bug that caused the back pannel to appear behind other windows or dissappear altogether
@@ -60,9 +49,17 @@ Alternatively, you can install the `Font Awesome 5 Free-Solid-900.otf` file manu
 ###### 1.0
 - First Release
 
+### First Launch (Python Script and <v1.5 Only)
+###### From v1.5 onwards, this no longer applies to the EXE version
+When you run Lustrous Launcher for the first time, it is very likely you will see an error:
+```
+Could not install required font.
+Try running Lustrous Launcher with admin privileges
+```
+This is due to the `Font Awesome 5 Free-Solid-900.otf` font file not being able to be installed.
+To complete the setup, Lustrous Launcher needs to be run with admin privileges (run the python script from an elevated command window)
+Alternatively, you can install the `Font Awesome 5 Free-Solid-900.otf` file manually (it is located in the assets folder) and create two directories `games` and `banners` in the root of the Lustrous Launcher folder
+
 ### Coming Soon
-- A Completed settings menu
-- Steam library integration
 - Big customization features!
-- Quicker launching when there are lots of games
 - Probably lots more

@@ -16,6 +16,7 @@ from sys import exit
 import unicodedata
 import re
 import ctypes
+from steamfiles import appinfo
 
 
 
@@ -35,6 +36,7 @@ def run_setup():
         top.withdraw()
         os.makedirs("./games")
         os.makedirs("./banners")
+        os.makedirs("./shortcuts")
         messagebox.showinfo("Setup Complete", "initial setup is complete!\nPlease run Lustrous Launcher again!")
         exit()
     except PermissionError as permerror:
@@ -62,7 +64,7 @@ if not os.path.exists("./games"): #first launch
             messagebox.showerror("Error","UAC-elevation is not supported in the py version.\nPlease run main.py once from an admin CMD.\n\nAlternatively, setup manually - see the tutorial on spatchy.github.io")
             exit()
 else:
-    defaultslist = ["searchonstart=false", "showsearchprompt=true", "solidsearchbg=false", "showsteambtn=true", 'steampath="C:\\Program Files (x86)\\Steam\\Steam.exe"']
+    defaultslist = ["searchonstart=false", "showsearchprompt=true", "solidsearchbg=false", "showsteambtn=true", 'steampath="C:/Program Files (x86)/Steam/Steam.exe"']
     while True:
         try:
             settingsfile = open("settings.ini","r+")
@@ -108,7 +110,7 @@ else:
     global exitcode
     global VERSION
     exitcode = 0
-    VERSION = "1.5"
+    VERSION = "1.6"
 
     root = Tk()
     root.geometry(str(root.winfo_screenwidth()) + "x" + str(int(root.winfo_screenheight())-40))
@@ -193,15 +195,17 @@ else:
         steambtnframe.bind("<Button-1>", lambda x: close(3))
 
     class Gamelink(Frame):
-        def __init__(self, parent, bannerimg, link, title):
+        def __init__(self, parent, bannerimg, link, title, jsonfile):
             super(Gamelink, self).__init__(parent)
             self.pack_propagate(1)
-            self.pilimage = Image.open(bannerimg)
-            self.imggif = ImageTk.PhotoImage(self.pilimage)
+            self.bannerpilimage = Image.open(bannerimg)
+            self.bannerimggif = ImageTk.PhotoImage(self.bannerpilimage)
             self.title = title
             self.bannername = bannerimg
-            self.banner = Label(self, width = 460, height = 215, image = self.imggif, bg = "#000001")
-            self.banner.image = self.imggif
+            self.jsonfile = jsonfile
+            self.path = link
+            self.banner = Label(self, width = 460, height = 215, image = self.bannerimggif, bg = "#000001")
+            self.banner.image = self.bannerimggif
             if bannerimg == glob.glob(os.path.join("./assets", "default.png"))[0]:
                 self.titlelbl = Label(self, text = title, bg = PRIHLCOLOR, fg = "#FFFFFF")
                 self.titlelbl.place(relx = 0.0, rely = 0.0)
@@ -226,10 +230,14 @@ else:
                 close(self)
             def cancel(event):
                 self.editlbl.destroy()
-            self.editlbl = Label(self, text = "Click to edit.\nRight click to cancel.", justify = CENTER, fg = "#FFFFFF", bg = "#060606")
-            self.editlbl.place(relx = 0, rely = 0, x = 2, y = 2)
+            self.editpilimage = Image.open("./assets/edit.png")
+            self.editimggif = ImageTk.PhotoImage(self.editpilimage)
+            self.editlbl = Label(self, image = self.editimggif, justify = CENTER, bg = "#777777")
+            self.editlbl.image = self.editimggif
+            self.editlbl.place(relx = 0, rely = 0)
             self.editlbl.bind("<Button-1>", edit)
             self.editlbl.bind("<Button-3>", cancel)
+            self.editlbl.bind("<Leave>", cancel)
             
             
             
@@ -265,7 +273,7 @@ else:
                 if Column > Columns:
                     Column = 0
                     Row += 1
-                Gamelink(self.gridframe, imgpath, linkpath, gametitle).grid(column = Column, row = Row, padx = (80, 0), pady = (0, 40))
+                Gamelink(self.gridframe, imgpath, linkpath, gametitle, file).grid(column = Column, row = Row, padx = (80, 0), pady = (0, 40))
                 Column += 1
                 if Row < 4:
                     self.gridframe.config(height = (259*4)+80) #this prevents a weird 'negative scroll'
@@ -343,8 +351,8 @@ else:
                 if item.lower().startswith(self.typearea.get().lower()):
                     self.livelist.append(gamedict[item])
             testgrid.displayResults(self.livelist)
-                
 
+                
     def startsearch(event):
         search = Searchbar(root, root.winfo_screenwidth())
         search.place(y = 0, x = 48)
@@ -367,7 +375,6 @@ else:
         root.focus_set()
         root.bind("<Return>", startsearch)
         
-
     top.mainloop()
 
     class Checkbox(Label):
@@ -395,87 +402,30 @@ else:
             return self.enabled
 
     class ImportOption(Frame):
-        def __init__(self, parent, attributesdict):
+        def __init__(self, parent, appid, appname):
             super(ImportOption, self).__init__(parent)
             self.pack_propagate(0)
             self.config(bg = "#FFFFFF", height = 60, highlightthickness = 1, highlightcolor = "#090909")
-            self.haserror = False
-            if not (attributesdict["path"] == None):
-                self.checkbox = Checkbox(self, "true")
-                self.checkbox.grid(column = 0, row = 0, rowspan = 2, padx = 5)
-            else:
-                self.checkbox = Checkbox(self, "false")
-                self.haserror = True
+            self.checkbox = Checkbox(self, "true")
+            self.checkbox.grid(column = 0, row = 0, rowspan = 2, padx = 5)
             if self.checkbox.get() == "true":
                 self.doimport = True
             else:
                 self.doimport = False
-            self.gamename = StringVar()
-            self.gamepath = StringVar()
-            self.gameid = attributesdict["ID"]
-            self.truetitle = attributesdict["name"] #keep reference to original title incase it's changed by the user
-            self.gamename.set(attributesdict["name"])
-            self.gamepath.set(attributesdict["path"])
-            self.titlelbl = Label(self, textvariable = self.gamename, bg = "#FFFFFF")
+            self.appname = appname
+            self.appid = appid
+            self.titlelbl = Label(self, text = self.appname, bg = "#FFFFFF")
             self.titlelbl.grid(column = 1, row = 0, sticky = W)
-            self.pathlbl = Label(self, textvariable = self.gamepath, bg = "#FFFFFF")
-            self.pathlbl.grid(column = 1, row = 1)
-            self.bind("<Enter>", self.onhover)
-            self.bind("<Leave>", self.onleave)
-            self.bind("<Button-1>", self.onclick)
-            self.titlelbl.bind("<Button-1>", self.onclick)
-            self.pathlbl.bind("<Button-1>", self.onclick)
-        def onhover(self, event):
-            self.config(bg = "#777777")
-            self.checkbox.config(bg = "#777777")
-            self.titlelbl.config(bg = "#777777")
-            self.pathlbl.config(bg = "#777777")
-        def onleave(self, event):
-            self.config(bg = "#FFFFFF")
-            self.checkbox.config(bg = "#FFFFFF")
-            self.titlelbl.config(bg = "#FFFFFF")
-            self.pathlbl.config(bg = "#FFFFFF")
-        def onclick(self, event):
-            self.editwin = Toplevel()
-            self.editwin.config(bg = "#FFFFFF")
-            self.editwin.wm_attributes("-topmost", 1)
-            self.editwin.iconbitmap("./assets/logo.ico")
-            self.editwin.resizable(False, False)
-            self.editwin.grab_set()
-            self.editgamelbl = Label(self.editwin, text = "Title: ", width = 15, bg = "#FFFFFF")
-            self.editpathlbl = Label(self.editwin, text = "Path: ", width = 15, bg = "#FFFFFF")
-            self.editgamebox = Entry(self.editwin, bg = "#FFFFFF", relief = FLAT, highlightthickness = 1, highlightbackground = "#000000")
-            self.editgamebox.insert(0, self.gamename.get())
-            self.editpathbox = Entry(self.editwin, bg = "#FFFFFF", relief = FLAT, highlightthickness = 1, highlightbackground = "#000000")
-            self.editpathbox.insert(0, self.gamepath.get())
-            self.editpathbtn = Button(self.editwin, text = "Browse", command = self.getpath)
-            self.savebtn = Button(self.editwin, text = "Save Changes", command = self.save)
-            self.editgamelbl.grid(column = 0, row = 0)
-            self.editgamebox.grid(column = 1, row = 0, columnspan = 2, sticky = W)
-            self.editpathlbl.grid(column = 0, row = 1, pady = 5)
-            self.editpathbox.grid(column = 1, row = 1, pady = 5, sticky = W)
-            self.editpathbtn.grid(column = 2, row = 1, pady = 5)
-            self.savebtn.grid(column = 0, row = 2, columnspan = 3, pady = 40)
-        def getpath(self):
-            self.editpathbox.delete(0, END)
-            self.editpathbox.insert(0, str(filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("EXE Files","*.exe"),("Shortcuts","*.lnk"),("Steam Internet Shortcut","*.url")))))
-        def save(self):
-            self.gamename.set(self.editgamebox.get())
-            self.gamepath.set(self.editpathbox.get())
-            if not self.gamename.get() == "":
-                self.checkbox.enable()
-                self.checkbox.grid(column = 0, row = 0, rowspan = 2, padx = 5)
-            self.editwin.destroy()
 
     class ImportPicker(Frame):
-        def __init__(self, parent, gameslist):
+        def __init__(self, parent, nameidmap):
             super(ImportPicker, self).__init__(parent)
             def onFrameConfigure(canvas):
                 self.area.config(scrollregion = canvas.bbox("all"))
             self.scrollbar = Scrollbar(self)
             self.scrollbar.pack(side = RIGHT, fill = Y)
             frameheight = 0
-            for item in gameslist:
+            for item in nameidmap.keys():
                 frameheight += 46
             self.area = Canvas(self, yscrollcommand=self.scrollbar.set, bg = "#FFFFFF", bd = 0, highlightthickness = 0)
             self.listframe = Frame(self.area, bg = "#FFFFFF", width = 400, height = frameheight)
@@ -488,14 +438,15 @@ else:
                 self.area.yview_scroll(int(-1*(event.delta/60)), "units")
             self.area.bind_all("<MouseWheel>", onScroll)
             self.doexpand()
-            x = 0
-            for item in gameslist: #replace range with gameslist            
-                ImportOption(self.listframe, gameslist[x]).pack(fill = X, expand = True, pady = 1)#replace dict with gameslist[x]
-                x+=1
+
+            for item in nameidmap.keys():            
+                ImportOption(self.listframe, item, nameidmap[item]).pack(fill = X, expand = True)
         def doexpand(self):
             parentwidth = self.area.winfo_width()
             self.listframe.config(width = parentwidth)
             self.after(1, self.doexpand)
+
+        
             
             
 
@@ -573,7 +524,7 @@ else:
         showsteambtn.grid(column = 2, row = 1, sticky = E)
         steampathlbl = Label(steamsettingsframe, bg = "#FFFFFF", text = "        Path to Steam:")
         steampathlbl.grid(column = 0, row = 2, sticky = W)
-        steambrowsebox = Entry(steamsettingsframe, textvariable = steampathstring)
+        steambrowsebox = Entry(steamsettingsframe, textvariable = steampathstring, relief = FLAT, highlightthickness = 1, highlightbackground = "#000000")
         steambrowsebox.grid(column = 1, row = 2, sticky = E+W)
         steambrowsebtn = Button(steamsettingsframe, text = "Browse", command=browseforsteam)
         steambrowsebtn.grid(column = 2, row = 2)
@@ -631,10 +582,10 @@ else:
 
     def addgame(**kwargs):
         root = Tk()
-        if kwargs is not {}:
-            root.wm_title("Edit Game")
-        else:
+        if kwargs == {}:
             root.wm_title("Add Game")
+        else:
+            root.wm_title("Edit Game")
                 
         root.iconbitmap("./assets/logo.ico")
         root.config(bg = "#FFFFFF")
@@ -671,66 +622,61 @@ else:
                 searchinglbl = Label(top, text = "Searching, please wait.\n This may take a while")
                 searchinglbl.pack()
                 libpath = librarybox.get()+"/steamapps/"
-                gameslist = []
+                installedlist = []
                 for file in os.listdir(libpath):
                     if file.startswith("appmanifest_"):
-                        try:
-                            manifest = open(libpath+file, "r")
-                            manifestdict = {}
-                            for line in manifest.readlines():#possibly the dirtiest parse of a file ever! <- not stupid if it works!
-                                try:
-                                    manifestdict[line.split("		")[0].strip().replace('"','')] = line.split("		")[1].strip().replace('"','')
-                                except IndexError:
-                                    pass #some lines don't have the spaces, they're not important :P
-                            exefound = False
-                            multipleexes = False
-                            for file in os.listdir(libpath+"common/"+manifestdict["installdir"]):
-                                if file.lower().endswith(".exe"):
-                                    if exefound:
-                                        multipleexes = True
-                                    exefound = True
-                                    path = libpath+"common/"+manifestdict["installdir"]+"/"+file
-                            if not exefound:
-                                try:
-                                    for file in os.listdir(libpath+"common/"+manifestdict["installdir"]+"/bin"):
-                                        if file.lower().endswith(".exe"):
-                                            if exefound:
-                                                multipleexes = True
-                                            exefound = True
-                                            path = libpath+"common/"+manifestdict["installdir"]+"/bin/"+file
-                                except FileNotFoundError:
-                                    pass #worth a try
-                            if multipleexes or not exefound:
-                                path = None
-                            attributesdict={"name":manifestdict["name"], "path":path, "ID":manifestdict["appid"], "exefound":exefound, "multipleexes":multipleexes}
-                            gameslist.append(attributesdict)
-                        except FileNotFoundError:
-                            pass #just in case file isn't acf
-                    
+                        installedlist.append(file.replace("appmanifest_", "").replace(".acf", ""))
+                try:
+                    with open(settingsdict["steampath"].replace("Steam.exe", "appcache/appinfo.vdf"), 'rb') as f:
+                        data = appinfo.load(f)
+                except FileNotFoundError:
+                    messagebox.showerror("Error", "Your Steam path seems to be wrong.\nPlease check your settings and try again")
+                    top.destroy()
+                nameidmap = {}
+                for app in installedlist:
+                    try:
+                        gamename = (data[int(app)]["sections"][b"appinfo"][b"common"][b"name"]).decode("utf-8")
+                        gamename = re.sub(r'[^a-zA-Z0-9_ !?#~%@]', '', gamename)
+                        nameidmap[app] = gamename
+                    except TypeError: #ignore irrelevant unparseable stuff
+                        pass
+                    except KeyError: #ignore irrelevant unparseable stuff
+                        pass
+
 
                 searchinglbl.pack_forget()
                 secondframe.pack()
-                usagelbl = Label(top, text = "Untick a game to skip import. Click on a game to edit its properties", bg = "#FFFFFF")
+                usagelbl = Label(top, text = "Do you want to import the following games?", bg = "#FFFFFF")
                 usagelbl.pack(fill = X)
-                impicker = ImportPicker(top, gameslist)
+                impicker = ImportPicker(top, nameidmap)
                 impicker.pack(fill = BOTH, expand = True)
                 buttonvar = StringVar()
                 buttonvar.set("Complete Import")
+                
                 def generateimport():
-                    def makesafe(value): #covert string to valid filename
-                        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-                        value = re.sub('[^\w\s-]', '', value.decode('ascii')).strip()
-                        value = re.sub('[-\s]+', '-', value)
-                        return value
                     x = 1
                     for item in list(reversed(impicker.listframe.pack_slaves())):
                         buttonvar.set("importing game {0}/".format(x)+str(len(list(reversed(impicker.listframe.pack_slaves())))))
                         x+=1
                         if item.checkbox.enabled == "true":
                             try:
-                                urllib.request.urlretrieve("https://steamcdn-a.akamaihd.net/steam/apps/{0}/header.jpg".format(item.gameid), "./banners/"+item.gameid+".jpg")
-                                gamefile = open("./games/"+makesafe(item.gamename.get())+".json", "w")
-                                gamestring=(str('{0}: "{1}", "path": "{2}", "bannername": "{3}"{4}').format('{"title"',item.gamename.get(), item.gamepath.get(), item.gameid, "}")) #.format causes problems... this was painful
+                                #download banner
+                                urllib.request.urlretrieve("https://steamcdn-a.akamaihd.net/steam/apps/{0}/header.jpg".format(item.appid), "./banners/"+item.appid+".jpg")
+
+                                #create shortcut
+                                urlfile = open("./shortcuts/"+item.appid+".url", "w")
+                                target = "steam://rungameid/"+item.appid
+                                urlfile.write('[InternetShortcut]\n')
+                                urlfile.write('URL=%s' % target)
+                                urlfile.close()
+
+                                #create game json
+                                if getattr(sys, 'frozen', False):
+                                    currentdir = os.path.dirname(sys.executable).replace("\\","/")
+                                else:
+                                    currentdir = os.path.dirname(__file__).replace("\\","/")
+                                gamefile = open("./games/"+item.appid+".json", "w")
+                                gamestring = (str('{0}: "{1}", "path": "{2}", "bannername": "{3}"{4}').format('{"title"',item.appname, currentdir+"/shortcuts/"+item.appid+".url", item.appid, "}")) #.format causes problems... this was painful
                                 gamefile.write(gamestring)
                                 gamefile.close()
                             except urllib.error.URLError:
@@ -749,7 +695,8 @@ else:
                 try:
                     os.listdir(librarybox.get()+"/steamapps/common")
                     start()
-                except FileNotFoundError:
+                except FileNotFoundError as e:
+                    print(e)
                     messagebox.showerror("Error", "That folder is not a steam library.\nThe folder you select should contain the steamapps folder")
 
             proceedbtn = Button(firstframe, text = "Begin Import", command = startbuffer)
@@ -758,16 +705,17 @@ else:
 
             firstframe.pack(fill = BOTH)
             secondframe = Frame(top)
-
+            
         steamimportbtn = Button(root, text = "Import Steam library", command = importsteam)
-        
+        ormanlbl = Label(root, text = "Or, import a game manually:", bg = "#FFFFFF")
+        divframe = Frame(root, bg = "#FFFFFF", highlightthickness = 1, highlightbackground = "#AAAAAA")
 
         titleframe = Frame(root, bg = "#FFFFFF")
         titlelbl = Label(titleframe, text = "Game Title: ", width = 15, bg = "#FFFFFF")
         titleenter = Entry(titleframe, bg = "#FFFFFF", relief = FLAT, highlightthickness = 1, highlightbackground = "#000000")
         titlelbl.grid(column = 0, row = 0, sticky = W)
         titleenter.grid(column = 1, row = 0, sticky = W+E)
-        titleframe.pack(expand = True, fill = X)
+        
 
         titleframe.grid_columnconfigure(1, weight=3)
 
@@ -787,7 +735,6 @@ else:
         bannerenter.grid(row = 0, column = 1, sticky = E+W)
         bannerbtn.grid(row = 0, column = 2, sticky = E)
         bannerwarn.grid(row = 1, column = 0, columnspan = 3)
-        bannerframe.pack(expand = True, fill = X)
 
         bannerframe.grid_columnconfigure(1, weight=3)
         
@@ -803,33 +750,54 @@ else:
         pathlbl.grid(row = 0, column = 0)
         pathbox.grid(row = 0, column = 1, sticky = E+W)
         pathbtn.grid(row = 0, column = 2)
-        pathframe.pack(expand = True, fill = X)
+        
 
         pathframe.grid_columnconfigure(1, weight=3)
 
-        def savegame():
+        def savegame(doask):
             jsondict = {}
             jsondict["title"] = titleenter.get()
             jsondict["path"] = pathbox.get()
             jsondict["bannername"] = bannerenter.get()
             jsonfile = open("./games/" + titleenter.get() + ".json","w")
             jsonfile.write(str(jsondict).replace("'",'"'))
-            if messagebox.askyesno("Done!", "Would you like to add another game?"):
-                titleenter.delete(0, END)
-                pathbox.delete(0, END)
-                bannerenter.delete(0, END)
+            if doask:
+                if messagebox.askyesno("Done!", "Would you like to add another game?"):
+                    titleenter.delete(0, END)
+                    pathbox.delete(0, END)
+                    bannerenter.delete(0, END)
+                else:
+                    root.destroy()
             else:
                 root.destroy()
 
+        savebtn = Button(root, text = "Add Game To Launcher", command = lambda: savegame(True))
+        savebtn.pack(side = BOTTOM)
+        
         if kwargs == {}:
             steamimportbtn.pack(side = TOP)
         else:
             titleenter.insert(0, kwargs["target"].title)
-            bannerenter.insert(0, kwargs["target"].bannername.replace("./banners\\","").split(".")[0])        
-            
-
-        savebtn = Button(root, text = "Add Game To Launcher", command = savegame)
-        savebtn.pack(side = BOTTOM)
+            bannerenter.insert(0, kwargs["target"].bannername.replace("./banners\\","").split(".")[0])
+            pathbox.insert(0, kwargs["target"].path)
+            savebtn.config(text = "Save Changes", command = lambda: savegame(False))
+            def removegame():
+                if messagebox.askokcancel("Delete Game", "This will remove " + kwargs["target"].title + " from Lustrous Launcher.\nThis cannot be undone."):
+                    try:
+                        os.remove("./games/"+kwargs["target"].jsonfile)
+                        messagebox.showinfo("Success", "The game was removed successfully")
+                        root.destroy()
+                    except FileNotFoundError:
+                        messagebox.showerror("Error", "The game seems to have already been deleted")
+            removegamebtn = Button(root, text = "Remove Game", command = removegame)
+            removegamebtn.pack()
+        divframe.pack(expand = True, fill = X, padx = 30)
+        if kwargs == {}:
+            ormanlbl.pack()
+        titleframe.pack(expand = True, fill = X)
+        bannerframe.pack(expand = True, fill = X)
+        pathframe.pack(expand = True, fill = X)
+    
         root.mainloop()
 
     def opensteam():
@@ -845,5 +813,3 @@ else:
         opensteam()
     elif type(exitcode) is Gamelink:
         addgame(target = exitcode)
-
-

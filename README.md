@@ -13,6 +13,7 @@ Online help and a tutorial can now be found [here](https://spatchy.github.io/Lus
 
 ### Changelog
 ###### 1.6
+- `Note: AUTOMATIC UPDATING IS SUSPENDED IN THIS VERSION DUE TO A PROBLEM WITH THE AUTO-UPDATER`
 - Steam importing should now work flawlessly (No more guessing about exe locations, games are launched through Steam directly)
 - Edit your existing games! Right click a game in the launcher to bring up the edit button.
 - New `edit.png` asset added to the assets folder for edit mode

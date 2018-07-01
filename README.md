@@ -65,6 +65,5 @@ To complete the setup, Lustrous Launcher needs to be run with admin privileges (
 Alternatively, you can install the `Font Awesome 5 Free-Solid-900.otf` file manually (it is located in the assets folder) and create two directories `games` and `banners` in the root of the Lustrous Launcher folder
 
 ### Coming Soon
-- Improved Steam library importing
 - Big customization features!
 - Probably lots more

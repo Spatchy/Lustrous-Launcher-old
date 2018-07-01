@@ -5,13 +5,18 @@ _The Sleek, Simple Game Launcher_
 Lustrous Launcher is the sleek, simple game launcher, designed to make launching games a more pleasant experience.
 Lustrous Launcher opens quickly and doesn't hang around in the background hogging resources!
 
-### Version 1.5 Released: A message from Spatchy (THIS IS HUGE!)
-Version 1.5 has just dropped with a search bar, redesigned settings menu and FREAKIN' STEAM LIBRARY INTEGRATION! Check out the rest of the changes below! Sorry this one took so long, I've had exams but now they're over and I can get back to maintaining the project!
+### Version 1.6 Released: A message from Spatchy (Perfecting the 1.5 changes)
+Version 1.5 introduced a search bar, redesigned settings menu and Steam library integration! Steam library importing didn't work as well as intended. I've fixed that up and now it should work pretty much flawlessly (it now uses the manifest.acf files to find game IDs and launch `steam://` url shortcuts). You can now also edit games by right clicking them in the launcher (this was technically available in v1.5 but it was very crude fragment code that I left in by mistake and didn't talk about). v1.6 is the first version I really feel is fit for gamer consumption, I hope you enjoy this one!
 
 ### Tutorial
 Online help and a tutorial can now be found [here](https://spatchy.github.io/Lustrous-Launcher/tutorial)
 
 ### Changelog
+###### 1.6
+- Steam importing should now work flawlessly (No more guessing about exe locations, games are launched through Steam directly)
+- Edit your existing games! Right click a game in the launcher to bring up the edit button.
+- New `edit.png` asset added to the assets folder for edit mode
+- A couple of GUI tweaks to make things look a bit nicer (Yes, even better than last time!)
 ###### 1.5
 - Fixed bug that caused the back pannel to appear behind other windows or dissappear altogether
 - Added search bar! Press enter to search through your huge game library!
@@ -60,6 +65,5 @@ To complete the setup, Lustrous Launcher needs to be run with admin privileges (
 Alternatively, you can install the `Font Awesome 5 Free-Solid-900.otf` file manually (it is located in the assets folder) and create two directories `games` and `banners` in the root of the Lustrous Launcher folder
 
 ### Coming Soon
-- Improved Steam library importing
 - Big customization features!
 - Probably lots more

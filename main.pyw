@@ -16,7 +16,6 @@ from sys import exit
 import unicodedata
 import re
 import ctypes
-from steamfiles import appinfo
 
 
 
@@ -627,22 +626,29 @@ else:
                     if file.startswith("appmanifest_"):
                         installedlist.append(file.replace("appmanifest_", "").replace(".acf", ""))
                 try:
-                    with open(settingsdict["steampath"].replace("Steam.exe", "appcache/appinfo.vdf"), 'rb') as f:
-                        data = appinfo.load(f)
+                    nameidmap = {}
+                    for app in installedlist:
+                        #RETURN OF THE DIRTY ACF PARSER, GOODBYE STEAMFILES AND APPINFO.VDF - YOU BOTH SUCK! :P 
+                        manifest = open(libpath+"appmanifest_"+app+".acf", "r")
+                        manifestdict = {}
+                        for line in manifest.readlines():#possibly the dirtiest parse of a file ever! <- not stupid if it works!
+                            print(line)
+                            try:
+                                manifestdict[line.split("		")[0].strip().replace('"','')] = line.split("		")[1].strip().replace('"','')
+                            except IndexError:
+                                pass #some lines don't have the spaces, they're not important :P
+                        gamename = manifestdict["name"]
+                        gamename = re.sub(r'[^a-zA-Z0-9_ !?#~%@]', '', gamename)
+                        nameidmap[app] = gamename
+                        
                 except FileNotFoundError:
                     messagebox.showerror("Error", "Your Steam path seems to be wrong.\nPlease check your settings and try again")
                     top.destroy()
-                nameidmap = {}
-                for app in installedlist:
-                    try:
-                        gamename = (data[int(app)]["sections"][b"appinfo"][b"common"][b"name"]).decode("utf-8")
-                        gamename = re.sub(r'[^a-zA-Z0-9_ !?#~%@]', '', gamename)
-                        nameidmap[app] = gamename
-                    except TypeError: #ignore irrelevant unparseable stuff
-                        pass
-                    except KeyError: #ignore irrelevant unparseable stuff
-                        pass
-
+                except Exception as e:
+                    errorlog = open("./errorlog.txt", "w")
+                    errorlog.write(str(e))
+                    errorlog.close()
+                print(nameidmap)
 
                 searchinglbl.pack_forget()
                 secondframe.pack()

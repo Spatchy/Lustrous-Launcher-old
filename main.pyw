@@ -109,7 +109,7 @@ else:
     global exitcode
     global VERSION
     exitcode = 0
-    VERSION = "1.6"
+    VERSION = "1.7"
 
     root = Tk()
     root.geometry(str(root.winfo_screenwidth()) + "x" + str(int(root.winfo_screenheight())-40))
@@ -541,15 +541,15 @@ else:
             latestrelease = json.loads(urllib.request.urlopen("https://api.github.com/repos/Spatchy/Lustrous-Launcher/releases/latest").read().decode('utf-8'))["tag_name"]
             if int(latestrelease.replace(".","")) > int(VERSION.replace(".","")):
                 if messagebox.askyesno("Update Available!", "This version is: {0}\nThe latest release is: {1}\n\nDo you want to launch the updater?".format(VERSION, latestrelease)):
-                    if messagebox.askyesno("Update", "Due to an error with the Auto-Updater\nautomatic updates are suspended until the next update\nWould you like to download manually from Github?"):
-                        webbrowser.open("https://github.com/Spatchy/Lustrous-Launcher/releases/latest")
-##                    if getattr(sys, 'frozen', False):
-##                        currentdir = os.path.dirname(sys.executable)
-##                        updateapp = currentdir + "\\llupdate\\llupdate.exe"
-##                    else:
-##                        currentdir = os.path.dirname(__file__)
-##                        updateapp = currentdir + "\\llupdate\\llupdate.pyw"
-##                    subprocess.Popen(updateapp, shell = True)
+                    #if messagebox.askyesno("Update", "Due to an error with the Auto-Updater\nautomatic updates are suspended until the next update\nWould you like to download manually from Github?"):
+                        #webbrowser.open("https://github.com/Spatchy/Lustrous-Launcher/releases/latest")
+                    if getattr(sys, 'frozen', False):
+                        currentdir = os.path.dirname(sys.executable)
+                        updateapp = currentdir + "\\llupdate\\llupdate.exe"
+                    else:
+                        currentdir = os.path.dirname(__file__)
+                        updateapp = currentdir + "\\llupdate\\llupdate.pyw"
+                    subprocess.Popen(updateapp, shell = True, cwd = currentdir+"\\llupdate")
 
                     root.destroy()
             else:

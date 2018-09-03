@@ -5,13 +5,15 @@ _The Sleek, Simple Game Launcher_
 Lustrous Launcher is the sleek, simple game launcher, designed to make launching games a more pleasant experience.
 Lustrous Launcher opens quickly and doesn't hang around in the background hogging resources!
 
-### Version 1.6 Released: A message from Spatchy (Perfecting the 1.5 changes)
+### Version 1.6 (edit: and now 1.7) Released: A message from Spatchy (Perfecting the 1.5 changes)
 Version 1.5 introduced a search bar, redesigned settings menu and Steam library integration! Steam library importing didn't work as well as intended. I've fixed that up and now it should work pretty much flawlessly (it now uses the manifest.acf files to find game IDs and launch `steam://` url shortcuts). You can now also edit games by right clicking them in the launcher (this was technically available in v1.5 but it was very crude fragment code that I left in by mistake and didn't talk about). v1.6 is the first version I really feel is fit for gamer consumption, I hope you enjoy this one!
 
 ### Tutorial
 Online help and a tutorial can now be found [here](https://spatchy.github.io/Lustrous-Launcher/tutorial)
 
 ### Changelog
+###### 1.7
+- Fixed updater (No more visiting GitHub for updates!)
 ###### 1.6
 - `Note: AUTOMATIC UPDATING IS SUSPENDED IN THIS VERSION DUE TO A PROBLEM WITH THE AUTO-UPDATER`
 - Steam importing should now work flawlessly (No more guessing about exe locations, games are launched through Steam directly)
@@ -47,11 +49,12 @@ Online help and a tutorial can now be found [here](https://spatchy.github.io/Lus
 - Added support for all common image types for use as banners
 ###### 1.0
 - First Release
+
 ### EXE version
 The EXE version can be downloaded from the [releases page](https://github.com/Spatchy/Lustrous-Launcher/releases/latest)
 
 ### Dependencies (Python Script Only)
-all dependencies *MUST* be installed before the Lustrous Launcher python script can be used
+All dependencies *MUST* be installed before the Lustrous Launcher python script can be used
 - [Pillow (PIL)](https://pillow.readthedocs.io/en/latest/installation.html)
 
 ### First Launch (Python Script and <v1.5 Only)

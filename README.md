@@ -1,6 +1,9 @@
 # Lustrous Launcher
 _The Sleek, Simple Game Launcher_
 
+## WARNING: This code is a complete mess. The program works but attempting to understand the code may lead to an unpleasent headache, vomiting or spontaneous combustion. You have been warned! 
+#### A much better version is on the way: [Lustrous Launcher 2](https://github.com/spatchy/Lustrous-Launcher-2)
+
 ### What is Lustrous Launcher?
 Lustrous Launcher is the sleek, simple game launcher, designed to make launching games a more pleasant experience.
 Lustrous Launcher opens quickly and doesn't hang around in the background hogging resources!
